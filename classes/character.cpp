@@ -1,10 +1,11 @@
 #include <iostream>
 #include "./character.h"
+#include "./update.h"
 
 using std::cout;
 using std::endl;
 
-Character::Character(string name, int health, int speed, int damage, int attackSpeed, int attackRange, int attackCooldown, int cost, int populationCost, int trainingTime)
+Character::Character(string name, float health, int speed, float damage, int attackSpeed, int attackRange, int attackCooldown, int cost, int populationCost, int trainingTime)
 {
     this->setName(name);
     this->setHealth(health);
@@ -22,6 +23,7 @@ Character::Character(string name, int health, int speed, int damage, int attackS
     this->setTrainingProgress(0);
 
     this->actions = vector<Action*>();
+    this->updates = vector<Update*>();
 
     this->attackMode = false;
     this->trained = false;
@@ -46,7 +48,9 @@ Character::Character(const Character& other)
     this->setTrainingProgress(other.getTrainingProgress());
 
     this->actions = vector<Action*>();
+    this->updates = vector<Update*>();
     this->copyActions(other.getActions(), other.getActionCount());
+    this->copyUpdates(other.getUpdates(), other.getUpdateCount());
 
     this->attackMode = false;
     this->trained = false;
@@ -210,6 +214,27 @@ bool Character::isReadyToRunAction()
     return false;
 }
 
+bool Character::canUpdateSlot(int slot) const
+{
+    if (slot < 0 || slot >= this->getUpdateCount())
+        return false;
+
+    Update* update = this->updates[slot];
+    if (update->getCurrentLevel() >= Update::MAX_LEVEL)
+        return false;
+
+    return true;
+}
+
+void Character::updateSlot(int slot)
+{
+    if (!this->canUpdateSlot(slot))
+        return;
+
+    Update* update = this->updates[slot];
+    update->updateCharacter(this);
+}
+
 void Character::resetProgress()
 {
     this->setSpeedProgress(0);
@@ -247,6 +272,13 @@ void Character::copyActions(Action** actions, int actionCount)
 {
     for (int i = 0; i < actionCount; i++) {
         this->addAction(actions[i]->clone());
+    }
+}
+
+void Character::copyUpdates(Update** updates, int updateCount)
+{
+    for (int i = 0; i < updateCount; i++) {
+        this->addUpdate(new Update(*updates[i]));
     }
 }
 

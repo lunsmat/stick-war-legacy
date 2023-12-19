@@ -2,6 +2,10 @@
 #include <array>
 #include "./game.h"
 #include "./character.h"
+#include "./magikill.h"
+#include "./miner.h"
+#include "./update.h"
+#include "./magikillMinionUpdate.h"
 
 using std::cout;
 using std::array;
@@ -22,10 +26,37 @@ void Game::start()
 
     cout << "Thanks for playing!" << endl;
 
-    array<Character*, 2> characters = {
-        new Character("Swordwrath", 100, 1000, 12, 1000, 1, 1000, 125, 1, 8000),
-        new Character("Spearton", 440, 1130, 15, 750, 1, 1400, 500, 2, 12000)
+    Magikill* magikill = new Magikill("Magikill", 200, 1500, 9, 1000, 1, 1000, 500, 2, 12000);
+    Miner* miner = new Miner("Miner", 100, 1000, 6.0, 1000, 1, 1000, 25, 1, 5000);
+
+    array<Character*, 5> characters = {
+        new Character("Swordwrath", 100, 1000, 14.4, 1000, 1, 1000, 125, 1, 8000),
+        new Character("Spearton", 440, 1130, 15, 750, 1, 1400, 500, 2, 12000),
+        magikill,
+        new Character("Giant", 1500, 4000, 25, 4000, 1, 1000, 1500, 5, 20000),
+        miner
     };
+
+    // Swordwrath updates
+    // 20% increase damage
+    characters[0]->addUpdate(new Update("Swordwrath Sword", "Increases the Swordwrath damage by 20%.", 0.0, 0.0, 0.2, 0.0));
+    // Helmet - 20% increase health, 10% increase speed
+    characters[0]->addUpdate(new Update("Swordwrath Helmet", "Increases the Swordwrath health by 20% and speed by 10%.", 0.2, 0.1, 0.0, 0.0));
+
+    // Spearton updates
+    // helmet - 20% increase health
+    characters[1]->addUpdate(new Update("Spearton Helmet", "Increases the Spearton health by 20%.", 0.2, 0.0, 0.0, 0.0));
+    // shield - 10% increase health
+    characters[1]->addUpdate(new Update("Spearton Shield", "Increases the Spearton health by 10%.", 0.1, 0.0, 0.0, 0.0));
+    // spear - 25% increase damage
+    characters[1]->addUpdate(new Update("Spearton Spear", "Increases the Spearton damage by 25%.", 0.0, 0.0, 0.25, 0.0));
+
+    // Magikill updates
+    // staff - 15% increase damage, 5% increase foot speed
+    characters[2]->addUpdate(new Update("Magikill Staff", "Increases the Magikill damage by 15% and foot speed by 5%.", 0.0, 0.05, 0.15, 0.0));
+
+    // Miner updates
+    // none
 
     cout << "Characters:" << endl;
     cout << "------------------------------------------------------" << endl;
@@ -36,6 +67,13 @@ void Game::start()
 
     Character swordwrath = Character(*characters[0]);
     Character spearton = Character(*characters[1]);
+
+    for (int i = 0; i < swordwrath.getUpdateCount(); i++)
+    {
+        for (int j = 0; j < Update::MAX_LEVEL; j++) {
+            swordwrath.updateSlot(i);
+        }
+    }
 
     this->simulateBattle(&swordwrath, &spearton);
 
@@ -64,7 +102,6 @@ void Game::simulateBattle(Character *character1, Character *character2)
         int timeToNextAction = character1->getTimeToNextAction() < character2->getTimeToNextAction() ? character1->getTimeToNextAction() : character2->getTimeToNextAction();
 
         cout << "------------------------------------------------------" << endl;
-        cout << "Time to next action: " << timeToNextAction << endl;
 
         character1->updateProgress(timeToNextAction);
         character2->updateProgress(timeToNextAction);

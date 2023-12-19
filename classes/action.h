@@ -7,6 +7,7 @@
 class Action
 {
     public:
+        Action();
         Action(int actionSpeed, int actionCooldown);
         Action(const Action& other);
         virtual ~Action();

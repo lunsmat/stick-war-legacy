@@ -1,5 +1,12 @@
 #include "./action.h"
 
+Action::Action()
+{
+    this->setActionSpeed(INT_MAX);
+    this->setActionCooldown(INT_MAX);
+    this->setActionProgress(0);
+}
+
 Action::Action(int actionSpeed, int actionCooldown)
 {
     this->setActionSpeed(actionSpeed);

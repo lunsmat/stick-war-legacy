@@ -14,14 +14,14 @@ using std::vector;
 class Character
 {
     public:
-        Character(string name, int health, int speed, int damage, int attackSpeed, int attackRange, int attackCooldown, int cost, int populationCost, int trainingTime);
+        Character(string name, float health, int speed, float damage, int attackSpeed, int attackRange, int attackCooldown, int cost, int populationCost, int trainingTime);
         Character(const Character& other);
         ~Character();
 
         inline string getName() const { return this->name; };
-        inline int getHealth() const { return this->health; };
+        inline float getHealth() const { return this->health; };
         inline int getSpeed() const { return this->speed; };
-        inline int getDamage() const { return this->damage; };
+        inline float getDamage() const { return this->damage; };
         inline int getAttackSpeed() const { return this->attackSpeed; };
         inline int getAttackRange() const { return this->attackRange; };
         inline int getAttackCooldown() const { return this->attackCooldown; };
@@ -40,14 +40,20 @@ class Character
         inline int getActionCount() const { return this->actions.size(); };
         inline Action** getActions() const { return (Action**)this->actions.data(); };
         inline void addAction(Action* action) { this->actions.push_back(action); };
+        inline Update** getUpdates() const { return (Update**)this->updates.data(); };
+        inline void addUpdate(Update* update) { this->updates.push_back(update); };
+        inline int getUpdateCount() const { return this->updates.size(); };
+
+        bool canUpdateSlot(int slot) const;
+        void updateSlot(int slot);
 
         int getTimeToNextAction() const;
         void updateProgress(int timeElapsed);
 
         inline void setName(string name) { this->name = name; };
-        inline void setHealth(int health) { this->health = health; }
+        inline void setHealth(float health) { this->health = health; }
         inline void setSpeed(int speed) { this->speed = speed; }
-        inline void setDamage(int damage) { this->damage = damage; }
+        inline void setDamage(float damage) { this->damage = damage; }
         inline void setAttackSpeed(int attackSpeed) { this->attackSpeed = attackSpeed; }
         inline void setAttackRange(int attackRange) { this->attackRange = attackRange; }
         inline void setAttackCooldown(int attackCooldown) { this->attackCooldown = attackCooldown; }
@@ -74,9 +80,9 @@ class Character
     private:
         string name;
 
-        int health; // in hit points
+        float health; // in hit points
         int speed; // in pixels per second
-        int damage; // per attack
+        float damage; // per attack
         int attackSpeed; // in milliseconds
         int attackRange; // in pixels
         int attackCooldown; // in milliseconds
@@ -88,6 +94,7 @@ class Character
 
         int trainingTime; // in milliseconds
         vector<Action *> actions;
+        vector <Update *> updates;
 
         // progresses the character's actions
         int speedProgress;
@@ -95,6 +102,7 @@ class Character
         int trainingProgress;
 
         void copyActions(Action** actions, int actionCount);
+        void copyUpdates(Update** updates, int updateCount);
         void updateReadyToRunAction();
 
 };
